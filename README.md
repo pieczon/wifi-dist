@@ -5,6 +5,7 @@ Program ma za zadanie mierzyć poziom sygnału połączonej sieci Wi-Fi, oraz ob
 
 ## Lista rzeczy do zrobienia:
 * odseparować mój kod od biblioteki
+* program pobiera od użytkownika niektóre wymagane parametry do obliczeń
 * wyrzucić nieużywane funkcjonalności
 * pobierać parametry potrzebne do modeli propagacyjnych od użytkownika
 * opisać logikę działania programu
