@@ -65,13 +65,39 @@ void Usage(char **argv)
 
 bool isNumber(char *string, int size)
 {
-	//printf("co odebrano<- %s\n", string);
+	printf("co odebrano<- %s\n", string);
     for (int i=0; i<size; i++)
 	{
-		//printf("%d el. stringa: %c\n", i, string[i]);
+		printf("%d el. stringa: %c\n", i, string[i]);
 		if(string[i] != '\0')
 		{
-			//printf("aktualny element do sprawdzenia isdigit()<- %c\n", string[i]);
+			printf("aktualny element do sprawdzenia isdigit()<- %c\n", string[i]);
+			if(isdigit(string[i]) == false)
+			{
+				return false;
+			}
+		}
+	}
+    return true;
+}
+
+bool isValueInArray(int val, int *arr, int size)
+{
+    int i;
+    for (i=0; i < size; i++) 
+	{
+        if (arr[i] == val)
+            return true;
+    }
+    return false;
+}
+
+bool isFloat(char *string, int size)
+{
+    for (int i=0; i<size; i++)
+	{
+		if( (string[i] != '\0') && (string[i] != '.') )
+		{
 			if(isdigit(string[i]) == false)
 			{
 				return false;
@@ -161,47 +187,48 @@ int main(int argc, char **argv)
 	printf(ANSI_COLOR_ORANGE"\nProgram oblicza szacunkową odległość połączonego urządzenia w sieci Wi-Fi od Routera/AP.\nPomiar prezentowany jest w metrach "ANSI_COLOR_RED"[m]"ANSI_COLOR_ORANGE", z dokładnością do 2 miejsc po przecinku.\n\n"ANSI_COLOR_RESET);
 
 	printf(ANSI_COLOR_GREEN"Podaj szacowaną wartość tłumienia w odległości 1"ANSI_COLOR_RED"[m]"ANSI_COLOR_GREEN" od Routera/AP [1 - 99]: "ANSI_COLOR_RESET);
-	st = scanf("%s", inputs);
-	int size = sizeof(inputs)/sizeof(char);
-	//printf("co wpisano-> %s\n", inputs);
-	while(isNumber(inputs, size) == false)
-	{	
-		printf(ANSI_COLOR_RED"Nie podano liczby, wpisz ponownie: "ANSI_COLOR_RESET);
-		memset(inputs, 0, 10*sizeof(char));
-		st = scanf("%s", inputs);
-		//printf("co wpisano-> %s\n", inputs);
-		//printf("+co daje isNumber: %d\n\n", isNumber(inputs, size));
-	}
-	//printf("co mamy w inputs: %s\n", inputs);
-	tlumienie_1m = atoi(inputs); //to rzutowanie nie działa poprawnie
-	//printf("jakie mamy tlumienie: %d\n", tlumienie_1m);
 	while((tlumienie_1m < 1) || (tlumienie_1m > 99))
 	{
-		printf(ANSI_COLOR_RED"Błędna liczba, podaj ponownie: "ANSI_COLOR_RESET);
-		st = scanf("%d", &tlumienie_1m);
+		if(inputs[0])
+		{
+			printf(ANSI_COLOR_RED"Błędna liczba, wpisz ponownie: "ANSI_COLOR_RESET);
+		}
+		memset(inputs, 0, 10*sizeof(char));
+		st = scanf("%s", inputs);
+		int size = sizeof(inputs)/sizeof(char);
+		while(isNumber(inputs, size) == false)
+		{	
+			printf(ANSI_COLOR_RED"Nie podano liczby, wpisz ponownie: "ANSI_COLOR_RESET);
+			memset(inputs, 0, 10*sizeof(char));
+			st = scanf("%s", inputs);
+			size = sizeof(inputs)/sizeof(char);
+		}
+		tlumienie_1m = atoi(inputs);
 	}
-
+	printf("-------ustawione tlumienie: %d\n", tlumienie_1m);
 	printf(ANSI_COLOR_GREEN"Podaj wartość indeksu gamma [3.5 - 6]: "ANSI_COLOR_RESET);
 	memset(inputs, 0, 10*sizeof(char));
-	sg = scanf("%s", inputs);
-	size = sizeof(inputs)/sizeof(char);
-	while(isNumber(inputs, size) == false)
-	{	
-		printf(ANSI_COLOR_RED"Nie podano liczby, wpisz ponownie: "ANSI_COLOR_RESET);
-		memset(inputs, 0, 10*sizeof(char));
-		sg = scanf("%s", inputs);
-		//printf("co wpisano-> %s\n", inputs);
-		//printf("+co daje isNumber: %d\n\n", isNumber(inputs, size));
-	}
-	indeks_gamma = atoi(inputs);
-	//sg = scanf("%f", &indeks_gamma);
 	while((indeks_gamma < 3.5) || (indeks_gamma > 6))
 	{
-		printf(ANSI_COLOR_RED"Błędna liczba, podaj ponownie: "ANSI_COLOR_RESET);
-		sg = scanf("%f", &indeks_gamma);
+		if(inputs[0])
+		{
+			printf(ANSI_COLOR_RED"Błędna liczba, wpisz ponownie: "ANSI_COLOR_RESET);
+		}
+		memset(inputs, 0, 10*sizeof(char));
+		sg = scanf("%s", inputs);
+		int size = sizeof(inputs)/sizeof(char);
+		while(isFloat(inputs, size) == false)
+		{	
+			printf(ANSI_COLOR_RED"Nie podano liczby, wpisz ponownie: "ANSI_COLOR_RESET);
+			memset(inputs, 0, 10*sizeof(char));
+			sg = scanf("%s", inputs);
+			size = sizeof(inputs)/sizeof(char);
+		}
+		indeks_gamma = atof(inputs);
 	}
+	printf("-------ustawiony indeks_gamma: %.2f\n", indeks_gamma);
 
-	printf(ANSI_COLOR_CYAN"\nRozpoczynam obliczenia...(zakończenie pomiarów klawisz "ANSI_COLOR_YELLOW"ESC"ANSI_COLOR_RESET")\n\n"ANSI_COLOR_RESET);
+	printf(ANSI_COLOR_CYAN"\nParametry poprawne, rozpoczynam obliczenia...(zakończenie pomiarów klawisz "ANSI_COLOR_YELLOW"ESC"ANSI_COLOR_RESET")\n\n"ANSI_COLOR_RESET);
 
 	zanik_mocy = (-1)*indeks_gamma*10;
 	tlumienie_swobod_przestrz = (-27.55+20*log10(2437)+20*log10(9)); //to przejrzec, sprawdzic co znaczy kazda liczba jeszcze raz, przekalkulowac nowa zmienna dbi_gain
@@ -211,19 +238,19 @@ int main(int argc, char **argv)
 		Usage(argv);
 		return 0;
 	}
-	wifi = wifi_scan_init(argv[1]);	// initialize the library with network interface argv[1] (e.g. wlan0)
+	wifi = wifi_scan_init(argv[1]);	//inicjalizacja funkcji biblioteki na interfejsie sieciowym lapka wlp4s0
 	
 	struct termios new_kbd_mode; 
-	tcgetattr(0, &g_old_kbd_mode); //put keyboard (stdin, actually) in raw, unbuffered mode
+	tcgetattr(0, &g_old_kbd_mode); //stdin w trybie niebuforowanym
 	memcpy(&new_kbd_mode, &g_old_kbd_mode, sizeof(struct termios)); 
 	
 	new_kbd_mode.c_lflag &= ~(ICANON | ECHO); 
 	new_kbd_mode.c_cc[VTIME] = 0; 
 	new_kbd_mode.c_cc[VMIN] = 1; 
 	tcsetattr(0, TCSANOW, &new_kbd_mode); 
-	atexit(old_attr); 	
+	atexit(old_attr); //przywrocenie trybu buforowanego stdin
 
-	sem_init(&watek1,0,1); //-----------tu wywołanie wątków obsługujących pomiary
+	sem_init(&watek1,0,1);
 	sem_init(&watek2,0,0);
 	pthread_t pomiary_thread, koniec_thread;
 	pthread_create(&pomiary_thread, NULL, pomiary, NULL);
