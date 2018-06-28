@@ -65,13 +65,10 @@ void Usage(char **argv)
 
 bool isNumber(char *string, int size)
 {
-	printf("co odebrano<- %s\n", string);
     for (int i=0; i<size; i++)
 	{
-		printf("%d el. stringa: %c\n", i, string[i]);
 		if(string[i] != '\0')
 		{
-			printf("aktualny element do sprawdzenia isdigit()<- %c\n", string[i]);
 			if(isdigit(string[i]) == false)
 			{
 				return false;
@@ -107,9 +104,9 @@ bool isFloat(char *string, int size)
     return true;
 }
 
-float mod_OneSlope(int sta_signal, int supp_1m, double absorption, int dbi_gain)
+float mod_OneSlope(int sta_signal, int supp_1m, float absorption, int dbi_gain)
 {
-	float pomiar = pow(10,(double)((sta_signal - dbi_gain) + supp_1m)/absorption);
+	float pomiar = pow(10,(float)((sta_signal - dbi_gain) + supp_1m)/absorption);
 	return pomiar;
 }//pow(10,(double)((station.signal_dbm-20)+tlumienie_1m)/zanik_mocy)
 
@@ -205,7 +202,7 @@ int main(int argc, char **argv)
 		}
 		tlumienie_1m = atoi(inputs);
 	}
-	printf("-------ustawione tlumienie: %d\n", tlumienie_1m);
+	
 	printf(ANSI_COLOR_GREEN"Podaj wartość indeksu gamma [3.5 - 6]: "ANSI_COLOR_RESET);
 	memset(inputs, 0, 10*sizeof(char));
 	while((indeks_gamma < 3.5) || (indeks_gamma > 6))
@@ -226,7 +223,9 @@ int main(int argc, char **argv)
 		}
 		indeks_gamma = atof(inputs);
 	}
-	printf("-------ustawiony indeks_gamma: %.2f\n", indeks_gamma);
+
+	printf("\nUstawione tlumienie: "ANSI_COLOR_YELLOW"%d"ANSI_COLOR_RESET"\n", tlumienie_1m);
+	printf("Ustawiony indeks gamma: "ANSI_COLOR_YELLOW"%.2f"ANSI_COLOR_RESET"\n", indeks_gamma);
 
 	printf(ANSI_COLOR_CYAN"\nParametry poprawne, rozpoczynam obliczenia...(zakończenie pomiarów klawisz "ANSI_COLOR_YELLOW"ESC"ANSI_COLOR_RESET")\n\n"ANSI_COLOR_RESET);
 
