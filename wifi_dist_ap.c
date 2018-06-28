@@ -13,7 +13,8 @@
 
 #define ANSI_COLOR_RED     "\x1b[31m"
 #define ANSI_COLOR_GREEN   "\x1b[32m"
-#define ANSI_COLOR_YELLOW  "\x1b[33m"
+#define ANSI_COLOR_YELLOW  "\x1b[93m"
+#define ANSI_COLOR_ORANGE  "\x1b[33m"
 #define ANSI_COLOR_BLUE    "\x1b[34m"
 #define ANSI_COLOR_MAGENTA "\x1b[35m"
 #define ANSI_COLOR_CYAN    "\x1b[36m"
@@ -62,16 +63,19 @@ void Usage(char **argv)
 	printf("%s wlan0\n", argv[0]);	
 }
 
-bool isNumber(char *string)
+bool isNumber(char *string, int size)
 {
-	printf("co odebrano<- %s\n", string);
-	int n = (sizeof(string)/sizeof(int)); //sizeof(string[0]) to nie dziala liczy 1 el. wiecej dla samych intów
-    for (int i=0; i<n; i++)
+	//printf("co odebrano<- %s\n", string);
+    for (int i=0; i<size; i++)
 	{
-		printf("%d el. stringa: %c\n", i, string[i]);
-		if(isdigit(string[i]) == false)
+		//printf("%d el. stringa: %c\n", i, string[i]);
+		if(string[i] != '\0')
 		{
-			return false;
+			//printf("aktualny element do sprawdzenia isdigit()<- %c\n", string[i]);
+			if(isdigit(string[i]) == false)
+			{
+				return false;
+			}
 		}
 	}
     return true;
@@ -118,7 +122,7 @@ void *pomiary(void *arg)
 		}
 		else
 		{
-			printf("%s "ANSI_COLOR_GREEN"%s"ANSI_COLOR_RESET" signal "ANSI_COLOR_YELLOW"%d"ANSI_COLOR_RESET"dBm signal_avg "ANSI_COLOR_YELLOW"%d"ANSI_COLOR_RESET"dBm\n One-Slope "ANSI_COLOR_RED"%.2f"ANSI_COLOR_RESET" Model-liniowy "ANSI_COLOR_RED"%.2f"ANSI_COLOR_RESET" Swobodnej-przestrzeni "ANSI_COLOR_RED"%.2f"ANSI_COLOR_RESET" Multi-Wall "ANSI_COLOR_RED"%.2f"ANSI_COLOR_RESET"\n\n", bssid_to_string(station.bssid,mac), 
+			printf("%s "ANSI_COLOR_GREEN"%s"ANSI_COLOR_RESET" signal "ANSI_COLOR_ORANGE"%d"ANSI_COLOR_RESET"dBm signal_avg "ANSI_COLOR_ORANGE"%d"ANSI_COLOR_RESET"dBm\n One-Slope "ANSI_COLOR_RED"%.2f"ANSI_COLOR_RESET" Model-liniowy "ANSI_COLOR_RED"%.2f"ANSI_COLOR_RESET" Swobodnej-przestrzeni "ANSI_COLOR_RED"%.2f"ANSI_COLOR_RESET" Multi-Wall "ANSI_COLOR_RED"%.2f"ANSI_COLOR_RESET"\n\n", bssid_to_string(station.bssid,mac), 
 			station.ssid, 
 			station.signal_dbm, 
 			station.signal_bea, 
@@ -154,24 +158,23 @@ void *koniec(void *arg)
 
 int main(int argc, char **argv)
 {
-	printf(ANSI_COLOR_YELLOW"\nProgram oblicza szacunkową odległość połączonego urządzenia w sieci Wi-Fi od Routera/AP.\nPomiar prezentowany jest w metrach "ANSI_COLOR_RED"[m]"ANSI_COLOR_YELLOW", z dokładnością do 2 miejsc po przecinku.\n\n"ANSI_COLOR_RESET);
+	printf(ANSI_COLOR_ORANGE"\nProgram oblicza szacunkową odległość połączonego urządzenia w sieci Wi-Fi od Routera/AP.\nPomiar prezentowany jest w metrach "ANSI_COLOR_RED"[m]"ANSI_COLOR_ORANGE", z dokładnością do 2 miejsc po przecinku.\n\n"ANSI_COLOR_RESET);
 
 	printf(ANSI_COLOR_GREEN"Podaj szacowaną wartość tłumienia w odległości 1"ANSI_COLOR_RED"[m]"ANSI_COLOR_GREEN" od Routera/AP [1 - 99]: "ANSI_COLOR_RESET);
-
 	st = scanf("%s", inputs);
-	printf("co wpisano-> %s\n", inputs);
-
-	while(isNumber(inputs) == false)
+	int size = sizeof(inputs)/sizeof(char);
+	//printf("co wpisano-> %s\n", inputs);
+	while(isNumber(inputs, size) == false)
 	{	
 		printf(ANSI_COLOR_RED"Nie podano liczby, wpisz ponownie: "ANSI_COLOR_RESET);
+		memset(inputs, 0, 10*sizeof(char));
 		st = scanf("%s", inputs);
-		printf("co wpisano-> %s\n", inputs);
-		printf("+co daje isNumber: %d\n\n", isNumber(inputs));
+		//printf("co wpisano-> %s\n", inputs);
+		//printf("+co daje isNumber: %d\n\n", isNumber(inputs, size));
 	}
-	printf("co mamy w inputs: %s\n", inputs);
-	tlumienie_1m = *inputs; //to rzutowanie nie działa poprawnie
-
-	printf("jakie mamy tlumienie: %d\n", tlumienie_1m);
+	//printf("co mamy w inputs: %s\n", inputs);
+	tlumienie_1m = atoi(inputs); //to rzutowanie nie działa poprawnie
+	//printf("jakie mamy tlumienie: %d\n", tlumienie_1m);
 	while((tlumienie_1m < 1) || (tlumienie_1m > 99))
 	{
 		printf(ANSI_COLOR_RED"Błędna liczba, podaj ponownie: "ANSI_COLOR_RESET);
@@ -179,14 +182,26 @@ int main(int argc, char **argv)
 	}
 
 	printf(ANSI_COLOR_GREEN"Podaj wartość indeksu gamma [3.5 - 6]: "ANSI_COLOR_RESET);
-	sg = scanf("%f", &indeks_gamma);
+	memset(inputs, 0, 10*sizeof(char));
+	sg = scanf("%s", inputs);
+	size = sizeof(inputs)/sizeof(char);
+	while(isNumber(inputs, size) == false)
+	{	
+		printf(ANSI_COLOR_RED"Nie podano liczby, wpisz ponownie: "ANSI_COLOR_RESET);
+		memset(inputs, 0, 10*sizeof(char));
+		sg = scanf("%s", inputs);
+		//printf("co wpisano-> %s\n", inputs);
+		//printf("+co daje isNumber: %d\n\n", isNumber(inputs, size));
+	}
+	indeks_gamma = atoi(inputs);
+	//sg = scanf("%f", &indeks_gamma);
 	while((indeks_gamma < 3.5) || (indeks_gamma > 6))
 	{
 		printf(ANSI_COLOR_RED"Błędna liczba, podaj ponownie: "ANSI_COLOR_RESET);
 		sg = scanf("%f", &indeks_gamma);
 	}
 
-	printf(ANSI_COLOR_CYAN"\nRozpoczynam obliczenia...(zakończenie pomiarów klawisz ESC)\n\n"ANSI_COLOR_RESET);
+	printf(ANSI_COLOR_CYAN"\nRozpoczynam obliczenia...(zakończenie pomiarów klawisz "ANSI_COLOR_YELLOW"ESC"ANSI_COLOR_RESET")\n\n"ANSI_COLOR_RESET);
 
 	zanik_mocy = (-1)*indeks_gamma*10;
 	tlumienie_swobod_przestrz = (-27.55+20*log10(2437)+20*log10(9)); //to przejrzec, sprawdzic co znaczy kazda liczba jeszcze raz, przekalkulowac nowa zmienna dbi_gain
