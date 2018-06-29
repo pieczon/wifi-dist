@@ -23,7 +23,7 @@
 struct wifi_scan *wifi = NULL;
 struct station_info station;    
 char mac[BSSID_STRING_LENGTH], key, inputs[10];
-int conn_stat, sg, st, liczba, tlumienie_1m;
+int conn_stat, sg, st, ss, tlumienie_1m, l_scian, sig_freq;
 float indeks_gamma, zanik_mocy, tlumienie_swobod_przestrz;
 
 static struct termios g_old_kbd_mode;
@@ -106,27 +106,27 @@ bool isFloat(char *string, int size)
 
 float mod_OneSlope(int sta_signal, int supp_1m, float absorption, int dbi_gain)
 {
-	float pomiar = pow(10,(float)((sta_signal - dbi_gain) + supp_1m)/absorption);
+	float pomiar = pow(10,(float)((sta_signal - dbi_gain + supp_1m)/absorption));
 	return pomiar;
-}//pow(10,(double)((station.signal_dbm-20)+tlumienie_1m)/zanik_mocy)
+} 
 
-float mod_ModelLiniowy(int sta_signal, double supp_freespace, int dbi_gain)
+float mod_ModelLiniowy(int sta_signal, float supp_freespace, int dbi_gain)
 {
-	float pomiar = (double)(((sta_signal - dbi_gain) - supp_freespace)/-15);
+	float pomiar = (float)((sta_signal - dbi_gain - supp_freespace)/-15);
 	return pomiar;
-}//(double)(((station.signal_dbm-20)-tlumienie_swobod_przestrz)/-15)
+}
 
-float mod_SwobodnejPrzestrzeni(int sta_signal, int dbi_gain)
+float mod_SwobodnejPrzestrzeni(int sta_signal, int freq, int dbi_gain)
 {
-	float pomiar = pow(10,(double)(((sta_signal - dbi_gain)-27.55 + 20*log10(2437))/-20));
+	float pomiar = pow(10,(float)((sta_signal -27.55 + 20*log10(freq))/-20));
 	return pomiar;
-}//pow(10,(double)(((station.signal_dbm-20)-27.55+20*log10(2437))/-20))
+}
 
-float mod_MultiWall(int sta_signal, int dbi_gain, int supp_1m, double absorption)
+float mod_MultiWall(int sta_signal, int supp_1m, float absorption, int wall_no, int dbi_gain)
 {
-	float pomiar = pow(10,(double)((sta_signal - dbi_gain) + supp_1m-1 * 8)/absorption);
+	float pomiar = pow(10,(float)((sta_signal + supp_1m - wall_no*8)/absorption));
 	return pomiar;
-}//pow(10,(double)((station.signal_dbm-20)+tlumienie_1m-1*8)/zanik_mocy))
+}
 
 void *pomiary(void *arg)
 {
@@ -145,14 +145,15 @@ void *pomiary(void *arg)
 		}
 		else
 		{
-			printf("%s "ANSI_COLOR_GREEN"%s"ANSI_COLOR_RESET" signal "ANSI_COLOR_ORANGE"%d"ANSI_COLOR_RESET"dBm signal_avg "ANSI_COLOR_ORANGE"%d"ANSI_COLOR_RESET"dBm\n One-Slope "ANSI_COLOR_RED"%.2f"ANSI_COLOR_RESET" Model-liniowy "ANSI_COLOR_RED"%.2f"ANSI_COLOR_RESET" Swobodnej-przestrzeni "ANSI_COLOR_RED"%.2f"ANSI_COLOR_RESET" Multi-Wall "ANSI_COLOR_RED"%.2f"ANSI_COLOR_RESET"\n\n", bssid_to_string(station.bssid,mac), 
+			printf("%s "ANSI_COLOR_GREEN"%s"ANSI_COLOR_RESET" signal_strength[dBm]"ANSI_COLOR_ORANGE"%d"ANSI_COLOR_RESET" signal_average[dBm]"ANSI_COLOR_ORANGE"%d"ANSI_COLOR_RESET" bss_freq[MHz]"ANSI_COLOR_ORANGE"%u"ANSI_COLOR_RESET"\n One-Slope "ANSI_COLOR_RED"%.2f"ANSI_COLOR_RESET" Model-liniowy "ANSI_COLOR_RED"%.2f"ANSI_COLOR_RESET" Swobodnej-przestrzeni "ANSI_COLOR_RED"%.2f"ANSI_COLOR_RESET" Multi-Wall "ANSI_COLOR_RED"%.2f"ANSI_COLOR_RESET"\n\n", bssid_to_string(station.bssid,mac), 
 			station.ssid, 
 			station.signal_dbm, 
-			station.signal_bea, 
-			mod_OneSlope(station.signal_dbm, tlumienie_1m, zanik_mocy, 20),
+			station.signal_avg, 
+			station.bss_freq, 
+			mod_OneSlope(station.signal_dbm, tlumienie_1m, zanik_mocy, 20), 
 			mod_ModelLiniowy(station.signal_dbm, tlumienie_swobod_przestrz, 20), 
-			mod_SwobodnejPrzestrzeni(station.signal_dbm, 20),
-			mod_MultiWall(station.signal_dbm, 20, tlumienie_1m, tlumienie_swobod_przestrz));
+			mod_SwobodnejPrzestrzeni(station.signal_dbm, sig_freq, 20), 
+			mod_MultiWall(station.signal_dbm, tlumienie_1m, zanik_mocy, l_scian, 20));
 		}
 		sleep(1);
 		sem_post(&watek2);
@@ -183,8 +184,8 @@ int main(int argc, char **argv)
 {
 	printf(ANSI_COLOR_ORANGE"\nProgram oblicza szacunkową odległość połączonego urządzenia w sieci Wi-Fi od Routera/AP.\nPomiar prezentowany jest w metrach "ANSI_COLOR_RED"[m]"ANSI_COLOR_ORANGE", z dokładnością do 2 miejsc po przecinku.\n\n"ANSI_COLOR_RESET);
 
-	printf(ANSI_COLOR_GREEN"Podaj szacowaną wartość tłumienia w odległości 1"ANSI_COLOR_RED"[m]"ANSI_COLOR_GREEN" od Routera/AP [1 - 99]: "ANSI_COLOR_RESET);
-	while((tlumienie_1m < 1) || (tlumienie_1m > 99))
+	printf(ANSI_COLOR_GREEN"Podaj szacowaną wartość tłumienia w odległości 1"ANSI_COLOR_RED"[m]"ANSI_COLOR_GREEN" od Routera/AP [1 - 80]: "ANSI_COLOR_RESET);
+	while((tlumienie_1m < 1) || (tlumienie_1m > 80))
 	{
 		if(inputs[0])
 		{
@@ -224,14 +225,57 @@ int main(int argc, char **argv)
 		indeks_gamma = atof(inputs);
 	}
 
-	printf("\nUstawione tlumienie: "ANSI_COLOR_YELLOW"%d"ANSI_COLOR_RESET"\n", tlumienie_1m);
+	printf(ANSI_COLOR_GREEN"Podaj liczbę ścian/stropów na drodze sygnału: "ANSI_COLOR_RESET);
+	memset(inputs, 0, 10*sizeof(char));
+	while(l_scian == 0)
+	{
+		if(inputs[0])
+		{
+			printf(ANSI_COLOR_RED"Błędna liczba, wpisz ponownie: "ANSI_COLOR_RESET);
+		}
+		memset(inputs, 0, 10*sizeof(char));
+		scanf("%s", inputs);
+		int size = sizeof(inputs)/sizeof(char);
+		while(isNumber(inputs, size) == false)
+		{	
+			printf(ANSI_COLOR_RED"Nie podano liczby, wpisz ponownie: "ANSI_COLOR_RESET);
+			memset(inputs, 0, 10*sizeof(char));
+			scanf("%s", inputs);
+			size = sizeof(inputs)/sizeof(char);
+		}
+		l_scian = atoi(inputs);
+	}
+
+	printf(ANSI_COLOR_GREEN"Podaj częstotliwość nadawanego sygnału [2.4GHz: 2412-2472MHz | 5GHz: 5180-5700MHz]: "ANSI_COLOR_RESET);
+	memset(inputs, 0, 10*sizeof(char));
+	while(((sig_freq < 2412) || (sig_freq > 2472)) && ((sig_freq < 5180) || (sig_freq > 5700)))
+	{
+		if(inputs[0])
+		{
+			printf(ANSI_COLOR_RED"Błędna liczba, wpisz ponownie: "ANSI_COLOR_RESET);
+		}
+		memset(inputs, 0, 10*sizeof(char));
+		st = scanf("%s", inputs);
+		int size = sizeof(inputs)/sizeof(char);
+		while(isNumber(inputs, size) == false)
+		{	
+			printf(ANSI_COLOR_RED"Nie podano liczby, wpisz ponownie: "ANSI_COLOR_RESET);
+			memset(inputs, 0, 10*sizeof(char));
+			st = scanf("%s", inputs);
+			size = sizeof(inputs)/sizeof(char);
+		}
+		sig_freq = atoi(inputs);
+	}
+
+	printf("\n\nUstawione tlumienie: "ANSI_COLOR_YELLOW"%d"ANSI_COLOR_RESET"\n", tlumienie_1m);
 	printf("Ustawiony indeks gamma: "ANSI_COLOR_YELLOW"%.2f"ANSI_COLOR_RESET"\n", indeks_gamma);
+	printf("Ustawiona liczba ścian/stropów: "ANSI_COLOR_YELLOW"%d"ANSI_COLOR_RESET"\n", l_scian);
+	printf("Ustawiona częstotliwość sygnału: "ANSI_COLOR_YELLOW"%d"ANSI_COLOR_RESET"\n", sig_freq);
 
 	printf(ANSI_COLOR_CYAN"\nParametry poprawne, rozpoczynam obliczenia...(zakończenie pomiarów klawisz "ANSI_COLOR_YELLOW"ESC"ANSI_COLOR_RESET")\n\n"ANSI_COLOR_RESET);
 
-	zanik_mocy = (-1)*indeks_gamma*10;
-	tlumienie_swobod_przestrz = (-27.55+20*log10(2437)+20*log10(9)); //to przejrzec, sprawdzic co znaczy kazda liczba jeszcze raz, przekalkulowac nowa zmienna dbi_gain
-
+	zanik_mocy = indeks_gamma*(-10);
+	tlumienie_swobod_przestrz = (-27.55+20*log10(2462)+20*log10(9));
 	if(argc != 2)
 	{
 		Usage(argv);
