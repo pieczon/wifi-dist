@@ -23,7 +23,7 @@
 struct wifi_scan *wifi = NULL;
 struct station_info station;    
 char mac[BSSID_STRING_LENGTH], key, inputs[10];
-int conn_stat, sg, st, ss, tlumienie_1m, l_scian, sig_freq;
+int conn_stat, sg, st, ss, sf, tlumienie_1m, l_scian, sig_freq;
 float indeks_gamma, zanik_mocy, tlumienie_swobod_przestrz;
 
 static struct termios g_old_kbd_mode;
@@ -227,20 +227,20 @@ int main(int argc, char **argv)
 
 	printf(ANSI_COLOR_GREEN"Podaj liczbę ścian/stropów na drodze sygnału: "ANSI_COLOR_RESET);
 	memset(inputs, 0, 10*sizeof(char));
-	while(l_scian == 0)
+	while(l_scian <= 0)
 	{
 		if(inputs[0])
 		{
 			printf(ANSI_COLOR_RED"Błędna liczba, wpisz ponownie: "ANSI_COLOR_RESET);
 		}
 		memset(inputs, 0, 10*sizeof(char));
-		scanf("%s", inputs);
+		ss = scanf("%s", inputs);
 		int size = sizeof(inputs)/sizeof(char);
 		while(isNumber(inputs, size) == false)
 		{	
 			printf(ANSI_COLOR_RED"Nie podano liczby, wpisz ponownie: "ANSI_COLOR_RESET);
 			memset(inputs, 0, 10*sizeof(char));
-			scanf("%s", inputs);
+			ss = scanf("%s", inputs);
 			size = sizeof(inputs)/sizeof(char);
 		}
 		l_scian = atoi(inputs);
@@ -255,13 +255,13 @@ int main(int argc, char **argv)
 			printf(ANSI_COLOR_RED"Błędna liczba, wpisz ponownie: "ANSI_COLOR_RESET);
 		}
 		memset(inputs, 0, 10*sizeof(char));
-		st = scanf("%s", inputs);
+		sf = scanf("%s", inputs);
 		int size = sizeof(inputs)/sizeof(char);
 		while(isNumber(inputs, size) == false)
 		{	
 			printf(ANSI_COLOR_RED"Nie podano liczby, wpisz ponownie: "ANSI_COLOR_RESET);
 			memset(inputs, 0, 10*sizeof(char));
-			st = scanf("%s", inputs);
+			sf = scanf("%s", inputs);
 			size = sizeof(inputs)/sizeof(char);
 		}
 		sig_freq = atoi(inputs);
