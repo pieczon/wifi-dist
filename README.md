@@ -1,6 +1,5 @@
 # wifi-dist-ap
 
-
 ## Cel i założenia projektu
 * program oblicza szacunkową odległość urządzenia od Routera/Access Pointa
 * odległość wyliczana jest na podstawie 4 różnych modeli propagacyjnych
@@ -21,11 +20,10 @@
 *
 
 ## Wymagania niefunkcjonalne
-* Any platforms supporting nl80211 netlink interface (new 802.11 interface). Generally *nix platforms.
-* Wireless devices that have cfg80211/mac80211 driver. Currently all new Linux wireless drivers should be written targeting either cfg80211 for fullmac devices or mac80211 for softmac devices.
-*
-*
-*
+* OS wspierający NL80211 netlink interface (systemy linux/unix)
+* karta sieciowa posiadająca sterownik cfg80211/mac80211 dla urządzeń SoftMAC/FuLLMAC (wszystkie nowe wydania systemów linux)
+* pliki wykorzystywanej biblioteki: wifi_scan.c, wifi_scan.h, Makefile
+* instalacja libmnl0 libmnl-dev
 
 ## Testy
 * manualne
