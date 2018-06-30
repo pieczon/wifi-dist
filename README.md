@@ -8,7 +8,7 @@
 * do określenia najlepszego umiejscowienia routera/AP w mieszkaniu/budynku
 
 ## Użyte technologie i biblioteki
-* C, threads
+* C, threads, Makefile
 * small C/C++ library for monitoring signal strength of WiFi networks (https://github.com/bmegli/wifi-scan.git)
 * Netlink Library (libnl)
 * Minimalistic Netlink Library (libmnl) doxygen
