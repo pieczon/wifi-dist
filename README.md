@@ -35,12 +35,12 @@
 
 ## Podsumowanie
 * pomysły na rozwinięcie projektu: 
-** dodanie obliczeń dla kolejnych modeli propagacyjnych: ITU-R P.1238, Motleya-Keenana, nieliniowy model Multi-Wall (COST231)
-** wizualizacja położenia routera/AP z wykorzystaniem odbiornika GPS (w środowisku zewnętrznym), na podstawie podania połżenia komputera (w środowisku wewnątrz budynkowym)
-** odczytywanie informacji o bieżącej częstotliwości sygnału wi-fi i kanale komunikacji, reorganizacja kodu aplikacji (np. tylko wywołanie funkcji w main(), funkcje w plikach .h), przepisanie aplikacji do C++, opracowanie ładniejszego interfejsu/sposobu prezentacji danych
+* dodanie obliczeń dla kolejnych modeli propagacyjnych: ITU-R P.1238, Motleya-Keenana, nieliniowy model Multi-Wall (COST231)
+* wizualizacja położenia routera/AP z wykorzystaniem odbiornika GPS (w środowisku zewnętrznym), na podstawie podania połżenia komputera (w środowisku wewnątrz budynkowym)
+* odczytywanie informacji o bieżącej częstotliwości sygnału wi-fi i kanale komunikacji, reorganizacja kodu aplikacji (np. tylko wywołanie funkcji w main(), funkcje w plikach .h), przepisanie aplikacji do C++, opracowanie ładniejszego interfejsu/sposobu prezentacji danych
 * jakie były problemy:
-** walidacja wprowadzanych przez użytkownika danych w języku C jest nietrywialna :)
-** zakończenie pracy programu, działającego w pętli nieskończonej poprzez naciśnięcie np. klawisza ESC jest nietrywialne :)
-** wyliczanie odległości połączonych urządzeń w sieci wi-fi jest bardzo relatywne
+* walidacja wprowadzanych przez użytkownika danych w języku C jest nietrywialna :)
+* zakończenie pracy programu, działającego w pętli nieskończonej poprzez naciśnięcie np. klawisza ESC jest nietrywialne :)
+* wyliczanie odległości połączonych urządzeń w sieci wi-fi jest bardzo relatywne
 
 ![wifi-dist-work](https://github.com/pieczon/wifi-dist/blob/master/Zrzut%20ekranu%20z%202018-05-25%2001-13-48.png)
