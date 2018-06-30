@@ -1,7 +1,6 @@
-# wifi-dist
-Projekt na studia PzESW 2018
+# wifi-dist-ap
 
-Program ma za zadanie mierzyć poziom sygnału połączonej sieci Wi-Fi, oraz obliczać szacunkową odległość urządzenia połączonego do Routera/Access Pointa.
+Program oblicza szacunkową odległość urządzenia połączonego od Routera/Access Pointa, na podstawie parametrów sygnału połączonej sieci Wi-Fi.
 
 ## Cel i założenia projektu
 * logika działania programu
@@ -18,6 +17,13 @@ Program ma za zadanie mierzyć poziom sygnału połączonej sieci Wi-Fi, oraz ob
 *
 
 ## Wymagania funkcjonalne
+* schemat
+*
+*
+*
+*
+
+## Wymagania niefunkcjonalne
 * schemat
 *
 *
