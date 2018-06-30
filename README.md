@@ -4,6 +4,8 @@
 * program oblicza szacunkową odległość urządzenia od Routera/Access Pointa
 * odległość wyliczana jest na podstawie 4 różnych modeli propagacyjnych
 * program dokonuje pomiarów na podstawie parametrów sygnału połączonej sieci Wi-Fi
+* aplikację można zastosować do sprawdzenia np. w pomieszczeniach, gdzie sygnał wi-fi jest najlepiej i najgorzej odbierany
+* do określenia najlepszego umiejscowienia routera/AP w mieszkaniu/budynku
 
 ## Użyte technologie i biblioteki
 * C, threads
@@ -27,11 +29,9 @@
 * instalacja libmnl0 libmnl-dev
 
 ## Testy
-* manualne
-*
-*
-*
-*
+* manualne porównanie wyników pomiaru aplikacji, z odległościami od urządzeń w różnych częściach pomieszczeń oraz w ramach budynku
+* empiryczne dobieranie parametrów do wyliczeń, względem sprawdzanego pomieszczenia i znajomości odległości
+* testowanie walidacji wprowadzanych danych, poprzez wpisywanie rożnych ciągów znaków, program informuje czy referencyjna wartość liczbowa się nie zgadza, czy podane dane nie są liczbą (całkowitą/zmiennoprzecinkową)
 
 ## Podsumowanie
 * pomysły na rozwinięcie projektu: 
