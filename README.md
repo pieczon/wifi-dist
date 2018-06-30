@@ -13,11 +13,12 @@
 * nl80211 header file, netlink nl80211 user space
 
 ## Wymagania funkcjonalne
-* 
-*
-*
-*
-*
+* wybór interfejsu sieciowego, prezentacja informacji o nazwie podłączonej sieci i MAC adresie routera/AP
+* pobieranie od użytkownika parametrów do wyliczeń: indeks odległościowego zaniku mocy, wartość tłumienia w odległości 1 metr, liczba przeszkód na drodze sygnału (ścian/stropów), częstotliwość nadawanego sygnału
+* walidacja wprowadzonych danych, zakresów referencyjnych oraz eliminacja błędnych wartości (wpisanie liter i innych niepoprawnych znaków)
+* działanie na 2 wątkach, jeden przelicza modele propagacyjne, drugi przełącza terminal w tryb niebuforowany i czeka na sygnał do zakończenia programu
+* prezentacja informacji o sile sygnału dBm, wyliczanie średniej siły sygnału dBm
+* informacje o wyliczonych odległościach w metrach z dokładnością do 2 miejsc po przecinku, dla modeli: One-Slope, Liniowego, Swobodnej Przestrzeni, Multi-Wall
 
 ## Wymagania niefunkcjonalne
 * OS wspierający NL80211 netlink interface (systemy linux/unix)
