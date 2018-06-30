@@ -1,23 +1,20 @@
 # wifi-dist-ap
 
-Program oblicza szacunkową odległość urządzenia połączonego od Routera/Access Pointa, na podstawie parametrów sygnału połączonej sieci Wi-Fi.
 
 ## Cel i założenia projektu
-* logika działania programu
-*
-*
-*
-*
+* Program oblicza szacunkową odległość urządzenia od Routera/Access Pointa
+* Odległość wyliczana jest na podstawie 4 różnych modeli propagacyjnych
+* Program dokonuje pomiarów na podstawie parametrów sygnału połączonej sieci Wi-Fi
 
-## Użyte technologie
-* wybór platformy
+## Użyte technologie i biblioteki
+*  
 *
 *
 *
 *
 
 ## Wymagania funkcjonalne
-* schemat
+* 
 *
 *
 *
